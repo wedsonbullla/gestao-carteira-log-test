@@ -1,4 +1,4 @@
-import { Button, Pagination, Table, Tag } from "antd";
+import { Button, Empty, Pagination, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { EyeOutlined } from "@ant-design/icons";
 import {
@@ -9,6 +9,9 @@ import {
 
 type Props = {
   data: LogEntry[];
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number, pageSize: number) => void;
   onOpen: (entry: LogEntry) => void;
 };
 
@@ -20,7 +23,22 @@ function OperationTag({ operation }: { operation: LogEntry["operation"] }) {
   );
 }
 
-function LogsCards({ data, onOpen }: Props) {
+function OperationId({ id }: { id?: string }) {
+  if (!id) return <>{"—"}</>;
+  return <span className="logs-operation-id">{id}</span>;
+}
+
+function LogsCards({ data, onOpen }: { data: LogEntry[]; onOpen: (entry: LogEntry) => void }) {
+  if (!data.length) {
+    return (
+      <Empty
+        className="logs-empty logs-empty--cards"
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="Nenhum resultado encontrado"
+      />
+    );
+  }
+
   return (
     <ul className="logs-cards">
       {data.map((entry) => (
@@ -53,7 +71,9 @@ function LogsCards({ data, onOpen }: Props) {
             {entry.operationId ? (
               <div>
                 <dt>Id da Operação</dt>
-                <dd>{entry.operationId}</dd>
+                <dd>
+                  <OperationId id={entry.operationId} />
+                </dd>
               </div>
             ) : null}
           </dl>
@@ -63,7 +83,10 @@ function LogsCards({ data, onOpen }: Props) {
   );
 }
 
-export function LogsTable({ data, onOpen }: Props) {
+export function LogsTable({ data, page, pageSize, onPageChange, onOpen }: Props) {
+  const start = (page - 1) * pageSize;
+  const pageRows = data.slice(start, start + pageSize);
+
   const columns: ColumnsType<LogEntry> = [
     {
       title: "Data",
@@ -78,7 +101,7 @@ export function LogsTable({ data, onOpen }: Props) {
     {
       title: "Operação",
       dataIndex: "operation",
-      width: 140,
+      width: 148,
       render: (operation: LogEntry["operation"]) => (
         <OperationTag operation={operation} />
       ),
@@ -87,19 +110,17 @@ export function LogsTable({ data, onOpen }: Props) {
       title: "Id da Operação",
       dataIndex: "operationId",
       width: 140,
-      ellipsis: true,
-      render: (id: string | undefined) => id ?? "—",
+      render: (id: string | undefined) => <OperationId id={id} />,
     },
     {
       title: "Operador/Aprovador",
       dataIndex: "user",
-      width: 168,
+      width: 180,
       ellipsis: true,
     },
     {
       title: "Descrição",
       dataIndex: "description",
-      width: 320,
     },
     {
       title: "Ação",
@@ -126,25 +147,33 @@ export function LogsTable({ data, onOpen }: Props) {
           className="logs-table"
           rowKey="id"
           columns={columns}
-          dataSource={data}
+          dataSource={pageRows}
           pagination={false}
           size="middle"
           scroll={{ x: 980 }}
-          tableLayout="fixed"
+          locale={{
+            emptyText: (
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description="Nenhum resultado encontrado"
+              />
+            ),
+          }}
         />
       </div>
-      <LogsCards data={data} onOpen={onOpen} />
+      <LogsCards data={pageRows} onOpen={onOpen} />
       <div className="logs-pagination">
         <span className="logs-pagination__count">
-          {data.length} Resultados encontrados
+          {data.length} {data.length === 1 ? "Resultado encontrado" : "Resultados encontrados"}
         </span>
         <Pagination
-          current={1}
+          current={page}
           total={data.length}
-          pageSize={20}
-          showSizeChanger
-          pageSizeOptions={["20", "50", "100"]}
+          pageSize={pageSize}
+          showSizeChanger={{ showSearch: false }}
+          pageSizeOptions={["10", "20", "50", "100"]}
           locale={{ items_per_page: "/ página" }}
+          onChange={onPageChange}
         />
       </div>
     </section>

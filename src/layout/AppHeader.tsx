@@ -21,7 +21,7 @@ export function AppHeader() {
         <div className="app-header__block">
           <Avatar icon={<UserOutlined />} />
           <div className="app-header__meta">
-            <span className="app-header__meta-label">Aaron C .Oliveira</span>
+            <span className="app-header__meta-label">Aaron C. Oliveira</span>
             <span className="app-header__meta-role">Operações</span>
           </div>
         </div>

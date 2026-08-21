@@ -168,6 +168,7 @@ body {
   color: rgba(255, 255, 255, 0.85);
   font-size: 14px;
   line-height: 22px;
+  overflow-wrap: anywhere;
 }
 
 .filters-card {
@@ -175,6 +176,10 @@ body {
   padding: 24px;
   background: var(--card-bg);
   border-radius: 16px 16px 0 0;
+}
+
+.filters-card .ant-form-item-label > label {
+  height: auto;
 }
 
 .filters-card__title {
@@ -217,6 +222,10 @@ body {
   min-width: 154px;
   height: 40px;
   border-radius: 8px;
+}
+
+.operation-select {
+  width: 100%;
 }
 
 .operation-select.ant-select-lg .ant-select-selector {
@@ -271,9 +280,24 @@ body {
   overflow-wrap: anywhere;
 }
 
+.logs-operation-id {
+  color: var(--blue-6);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  text-underline-position: from-font;
+  white-space: nowrap;
+}
+
 .logs-table__action {
   width: 72px;
   text-align: center;
+}
+
+.logs-empty--cards {
+  display: none;
 }
 
 .logs-cards {
@@ -335,6 +359,10 @@ body {
   overflow-wrap: anywhere;
 }
 
+.logs-card__meta dd .logs-operation-id {
+  font-weight: 400;
+}
+
 .logs-pagination {
   display: flex;
   align-items: center;
@@ -370,11 +398,21 @@ body {
 }
 
 @media (max-width: 768px) {
+  .page__title {
+    font-size: 22px !important;
+    line-height: 30px !important;
+  }
+
+  .page__subtitle {
+    max-width: 100%;
+  }
+
   .logs-table-wrap {
     display: none;
   }
 
-  .logs-cards {
+  .logs-cards,
+  .logs-empty--cards {
     display: flex;
   }
 
@@ -389,6 +427,25 @@ body {
     flex-wrap: wrap;
     justify-content: flex-start;
     row-gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters-card__actions {
+    flex-direction: column;
+  }
+
+  .filters-card__actions .ant-btn {
+    width: 100%;
+    flex: none;
+  }
+
+  .logs-card__meta {
+    grid-template-columns: 1fr;
+  }
+
+  .app-header__meta-label {
+    display: none;
   }
 }
 
@@ -531,9 +588,7 @@ body {
   font-size: 16px;
   line-height: 24px;
   color: var(--navy);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
 }
 
 .party-arrow {
@@ -581,6 +636,11 @@ body {
   line-height: 24px;
   font-weight: 600;
   color: var(--navy-text);
+}
+
+.cessao-table-wrap {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .cessao-table .ant-table-summary td {
@@ -640,6 +700,10 @@ body {
   .party-arrow {
     align-self: center;
     transform: rotate(90deg);
+  }
+
+  .cessao-table {
+    overflow-x: auto;
   }
 
   .ant-drawer-content-wrapper {

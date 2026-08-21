@@ -56,7 +56,7 @@ export function CessaoDrawer({ onClose }: Props) {
         <div className="stat-block">
           <div className="stat-block__head">
             <span className="section-label">Contratos Cedidos</span>
-            <Tag color="blue">3</Tag>
+            <Tag color="blue">{CESSAO_PRODUCTS.length}</Tag>
           </div>
           <div className="stat-card">
             <p className="stat-card__label">VALOR TOTAL CEDIDO</p>
@@ -64,10 +64,12 @@ export function CessaoDrawer({ onClose }: Props) {
           </div>
         </div>
         <div className="section-label">Visão Consolidada dos Contratos Cedidos</div>
+        <div className="cessao-table-wrap">
         <Table
           className="cessao-table"
           rowKey="product"
           pagination={false}
+          scroll={{ x: 640 }}
           dataSource={CESSAO_PRODUCTS}
           columns={[
             { title: "Produto", dataIndex: "product" },
@@ -82,6 +84,7 @@ export function CessaoDrawer({ onClose }: Props) {
             </Table.Summary.Row>
           )}
         />
+        </div>
       </div>
       <div className="drawer-actions">
         <Button type="primary" size="large" block onClick={onClose}>

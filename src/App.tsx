@@ -3,31 +3,35 @@ import { Breadcrumb, Button, Drawer, Typography } from "antd";
 import { ArrowLeftOutlined, HomeOutlined } from "@ant-design/icons";
 import { AppHeader } from "./layout/AppHeader";
 import { AppMenu } from "./layout/AppMenu";
-import { LogsFilters, type FilterValues } from "./components/LogsFilters";
+import { EMPTY_FILTERS, LogsFilters, type FilterValues } from "./components/LogsFilters";
 import { LogsTable } from "./components/LogsTable";
 import { CompanyDrawer } from "./drawers/CompanyDrawer";
 import { SettingsDrawer } from "./drawers/SettingsDrawer";
 import { CessaoDrawer } from "./drawers/CessaoDrawer";
 import { LOGS, type LogEntry } from "./data/logs";
+import { matchesFilters } from "./lib/filterLogs";
 
 const { Title, Text } = Typography;
 
 export default function App() {
-  const [filters, setFilters] = useState<FilterValues>({ operations: [] });
-  const [applied, setApplied] = useState<FilterValues>({ operations: [] });
+  const [filters, setFilters] = useState<FilterValues>(EMPTY_FILTERS);
+  const [applied, setApplied] = useState<FilterValues>(EMPTY_FILTERS);
   const [selected, setSelected] = useState<LogEntry | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
 
-  const rows = useMemo(() => {
-    return LOGS.filter((entry) => {
-      if (applied.operations?.length && !applied.operations.includes(entry.operation)) {
-        return false;
-      }
-      if (applied.user && !entry.user.toLowerCase().includes(applied.user.toLowerCase())) {
-        return false;
-      }
-      return true;
-    });
-  }, [applied]);
+  const rows = useMemo(() => LOGS.filter((entry) => matchesFilters(entry, applied)), [applied]);
+
+  const applyFilters = (next = filters) => {
+    setApplied(next);
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setFilters(EMPTY_FILTERS);
+    setApplied(EMPTY_FILTERS);
+    setPage(1);
+  };
 
   const drawerWidth = selected?.drawer === "cessao" ? 790 : 380;
 
@@ -61,14 +65,19 @@ export default function App() {
         <LogsFilters
           values={filters}
           onChange={setFilters}
-          onFilter={() => setApplied(filters)}
-          onClear={() => {
-            const cleared: FilterValues = { operations: [], period: null, user: "" };
-            setFilters(cleared);
-            setApplied(cleared);
-          }}
+          onFilter={() => applyFilters()}
+          onClear={clearFilters}
         />
-        <LogsTable data={rows} onOpen={setSelected} />
+        <LogsTable
+          data={rows}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={(nextPage, nextSize) => {
+            setPage(nextPage);
+            setPageSize(nextSize);
+          }}
+          onOpen={setSelected}
+        />
       </main>
       <Drawer
         open={Boolean(selected)}
